@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Corolla",
+    "manufacturer": "Toyota",
+    "is_petrol": true,
+    "tank_volume": 43
+  },
+  {
+    "id": 2,
+    "name": "Civic",
+    "manufacturer": "Honda",
+    "is_petrol": true,
+    "tank_volume": 47
+  },
+  {
+    "id": 3,
+    "name": "Model 3",
+    "manufacturer": "Tesla",
+    "is_petrol": false,
+    "tank_volume": 0
+  },
+  {
+    "id": 4,
+    "name": "X5",
+    "manufacturer": "BMW",
+    "is_petrol": true,
+    "tank_volume": 83
+  },
+  {
+    "id": 5,
+    "name": "Focus",
+    "manufacturer": "Ford",
+    "is_petrol": true,
+    "tank_volume": 52
+  }
+]
