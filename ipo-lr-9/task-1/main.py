@@ -1,183 +1,178 @@
-import json
-import os
 #Дмитрук Яны
+import json
+import os 
 print("start code")
-FILE_NAME = 'data.json'      # имя файла для хранения данных
+ 
 
-operations_count = 0         # счетчик выполненных операций
+file_name = 'data.json' # определение имени файла
+operation_counter = 0 # инициализация счетчика операций
 
-def load_data():             # загружает данные из файла
-    if os.path.exists(FILE_NAME):    # проверяет существование файла
-        with open(FILE_NAME, 'r', encoding='utf-8') as file:     # открывает файл для чтения
-            return json.load(file)   # возвращает данные из файла
-    return []                # возвращает пустой список если файла нет
+def fetch_data(): # функция получения данных
+    if os.path.exists(file_name): # проверка существования файла
+        with open(file_name, 'r', encoding='utf-8') as f: # открытие файла для чтения
+            return json.load(f) # возврат данных из файла
+    return [] # возврат пустого списка
 
-def save_data(data):         # сохраняет данные в файл
-    with open(FILE_NAME, 'w', encoding='utf-8') as file:     # открывает файл для записи
-        json.dump(data, file, ensure_ascii=False, indent=2)  # записывает данные с форматированием
+def store_data(info): # функция сохранения данных
+    with open(file_name, 'w', encoding='utf-8') as f: # открытие файла для записи
+        json.dump(info, f, ensure_ascii=False, indent=2) # запись данных
 
-def show_all_records():      # показывает все записи
-    data = load_data()       # загружает данные
-    if not data:             # проверяет есть ли записи
-        print("\nНет записей в базе данных.")    # сообщение если данных нет
+def display_records(): # отображение всех записей
+    records = fetch_data() # загрузка данных
+    if not records: # проверка на пустоту
+        print("\nбаза данных пуста") # сообщение
         return
     
-    print("\n=== ВСЕ ЗАПИСИ ===")     # заголовок
-    for i, record in enumerate(data, 1):    # перебирает все записи
-        print(f"\nЗапись #{i}:")      # номер записи
-        for key, value in record.items():   # перебирает поля записи
-            print(f"  {key}: {value}")      # выводит поле и значение
+    print("\n=== все записи ===") # заголовок
+    for index, item in enumerate(records, 1): # перебор записей
+        print(f"\nзапись #{index}:") # вывод номера
+        for k, v in item.items(): # перебор полей
+            print(f"  {k}: {v}") # вывод значений
 
-def find_record_by_id():     # ищет запись по ID
-    data = load_data()       # загружает данные
-    if not data:             # проверяет есть ли записи
-        print("\nНет записей в базе данных.")    # сообщение если данных нет
+def search_by_identifier(): # поиск по id
+    records = fetch_data() # загрузка данных
+    if not records: # проверка на пустоту
+        print("\nнет доступных записей") # сообщение
         return
     
-    try:                     # обработка ввода
-        search_id = int(input("\nВведите ID для поиска: "))  # запрашивает ID
-    except ValueError:       # если введено не число
-        print("Ошибка: ID должен быть числом.")  # сообщение об ошибке
+    try: # обработка ввода
+        target_id = int(input("\nвведите идентификатор для поиска: ")) # запрос
+    except ValueError: # ошибка ввода
+        print("некорректный идентификатор - требуется число") # сообщение
         return
     
-    found = False            # флаг найденной записи
-    for i, record in enumerate(data, 1):    # перебирает записи
-        if record.get('id') == search_id:   # сравнивает ID
-            print(f"\nНайдена запись #{i}:")    # выводит номер найденной записи
-            for key, value in record.items():   # перебирает поля записи
-                print(f"  {key}: {value}")      # выводит поле и значение
-            found = True             # устанавливает флаг
-            break                    # прерывает поиск
+    for idx, item in enumerate(records, 1): # поиск по записям
+        if item.get('id') == target_id: # сравнение id
+            print(f"\nнайдена запись #{idx}:") # вывод результата
+            for k, v in item.items(): # перебор полей
+                print(f"  {k}: {v}") # вывод значений
+            return # выход
     
-    if not found:            # если запись не найдена
-        print(f"\nЗапись с ID={search_id} не найдена.")  # сообщение об ошибке
+    print(f"\nзапись с идентификатором {target_id} отсутствует") # не найдено
 
-def add_record():            # добавляет новую запись
-    data = load_data()       # загружает данные
+def insert_new_record(): # добавление записи
+    data = fetch_data() # загрузка данных
     
-    print("\n=== ДОБАВЛЕНИЕ НОВОЙ ЗАПИСИ ===")  # заголовок
+    print("\n=== добавление новой записи ===") # заголовок
     
-    try:                     # обработка ввода ID
-        new_id = int(input("Введите ID: "))     # запрашивает новый ID
-    except ValueError:       # если введено не число
-        print("Ошибка: ID должен быть числом.")  # сообщение об ошибке
+    try: # обработка ввода
+        new_id_val = int(input("введите идентификатор: ")) # запрос id
+    except ValueError: # ошибка ввода
+        print("идентификатор должен быть числовым значением") # сообщение
         return
     
-    for record in data:      # проверяет существующие записи
-        if record.get('id') == new_id:   # если ID уже существует
-            print(f"Ошибка: запись с ID={new_id} уже существует.")  # сообщение об ошибке
+    for entry in data: # проверка уникальности
+        if entry.get('id') == new_id_val: # если id существует
+            print(f"идентификатор {new_id_val} уже используется") # сообщение
             return
     
-    name = input("Введите имя: ")        # запрашивает имя
-    age = input("Введите возраст: ")     # запрашивает возраст
-    city = input("Введите город: ")      # запрашивает город
+    name_val = input("введите имя: ") # запрос имени
+    age_val = input("введите возраст: ") # запрос возраста
+    location = input("введите местоположение: ") # запрос города
     
-    new_record = {           # создает новую запись
-        'id': new_id,        # добавляет ID
-        'name': name,        # добавляет имя
-        'age': age,          # добавляет возраст
-        'city': city         # добавляет город
+    new_entry = { # создание записи
+        'id': new_id_val, # id
+        'name': name_val, # имя
+        'age': age_val, # возраст
+        'city': location # город
     }
     
-    data.append(new_record)  # добавляет запись в список
-    save_data(data)          # сохраняет данные
+    data.append(new_entry) # добавление в список
+    store_data(data) # сохранение данных
     
-    print(f"Запись с ID={new_id} успешно добавлена.")  # сообщение об успехе
-    global operations_count  # обращается к глобальной переменной
-    operations_count += 1    # увеличивает счетчик операций
+    print(f"добавлена запись с идентификатором {new_id_val}") # сообщение
+    global operation_counter # глобальная переменная
+    operation_counter += 1 # увеличение счетчика
 
-def delete_record():         # удаляет запись
-    data = load_data()       # загружает данные
-    if not data:             # проверяет есть ли записи
-        print("\nНет записей в базе данных.")    # сообщение если данных нет
+def remove_entry(): # удаление записи
+    data = fetch_data() # загрузка данных
+    if not data: # проверка на пустоту
+        print("\nбаза данных не содержит записей") # сообщение
         return
     
-    try:                     # обработка ввода
-        delete_id = int(input("\nВведите ID записи для удаления: "))  # запрашивает ID для удаления
-    except ValueError:       # если введено не число
-        print("Ошибка: ID должен быть числом.")  # сообщение об ошибке
+    try: # обработка ввода
+        remove_id = int(input("\nвведите идентификатор записи для удаления: ")) # запрос
+    except ValueError: # ошибка ввода
+        print("требуется числовой идентификатор") # сообщение
         return
     
-    found = False            # флаг найденной записи
-    for i, record in enumerate(data):    # перебирает записи
-        if record.get('id') == delete_id:   # сравнивает ID
-            deleted_record = data.pop(i)    # удаляет запись по индексу
-            save_data(data)          # сохраняет обновленные данные
-            print(f"\nЗапись с ID={delete_id} успешно удалена.")  # сообщение об успехе
-            print("Удаленная запись:")      # заголовок
-            for key, value in deleted_record.items():   # перебирает поля удаленной записи
-                print(f"  {key}: {value}")  # выводит поле и значение
-            found = True             # устанавливает флаг
-            global operations_count  # обращается к глобальной переменной
-            operations_count += 1    # увеличивает счетчик операций
-            break                    # прерывает поиск
+    for position, entry in enumerate(data): # поиск записи
+        if entry.get('id') == remove_id: # если id совпадает
+            removed_item = data.pop(position) # удаление из списка
+            store_data(data) # сохранение изменений
+            print(f"\nудалена запись с идентификатором {remove_id}") # сообщение
+            print("удаленная информация:") # заголовок
+            for k, v in removed_item.items(): # перебор полей
+                print(f"  {k}: {v}") # вывод значений
+            global operation_counter # глобальная переменная
+            operation_counter += 1 # увеличение счетчика
+            return # выход
     
-    if not found:            # если запись не найдена
-        print(f"\nЗапись с ID={delete_id} не найдена.")  # сообщение об ошибке
+    print(f"\nзапись с идентификатором {remove_id} не обнаружена") # не найдено
 
-def exit_program():          # завершает программу
-    print(f"\n=== ВЫХОД ИЗ ПРОГРАММЫ ===")  # заголовок
-    print(f"Количество выполненных операций с записями: {operations_count}")  # выводит счетчик
-    print("До свидания!")    # прощание
-    exit()                   # завершает программу
+def terminate_app(): # завершение программы
+    print(f"\n=== завершение работы ===") # заголовок
+    print(f"выполнено операций: {operation_counter}") # вывод счетчика
+    print("работа завершена") # прощание
+    exit() # выход из программы
 
-def show_menu():             # показывает меню
-    print("\n" + "="*40)    # верхняя граница
-    print("ГЛАВНОЕ МЕНЮ")   # заголовок меню
-    print("="*40)           # разделитель
-    print("1. Вывести все записи")         # пункт 1
-    print("2. Вывести запись по полю (ID)")# пункт 2
-    print("3. Добавить запись")            # пункт 3
-    print("4. Удалить запись по полю (ID)")# пункт 4
-    print("5. Выйти из программы")         # пункт 5
-    print("="*40)           # нижняя граница
+def menu_interface(): # отображение меню
+    print("\n" + "="*40) # верхняя граница
+    print("основное меню") # заголовок меню
+    print("="*40) # разделитель
+    print("1. показать все записи") # пункт 1
+    print("2. найти запись по идентификатору") # пункт 2
+    print("3. создать новую запись") # пункт 3
+    print("4. удалить запись") # пункт 4
+    print("5. завершить работу") # пункт 5
+    print("="*40) # нижняя граница
 
-def initialize_data():       # инициализирует начальные данные
-    data = load_data()       # загружает данные
-    if len(data) >= 5:       # проверяет достаточно ли записей
-        return               # возвращает если достаточно
+def setup_initial_data(): # инициализация начальных данных
+    current_data = fetch_data() # загрузка текущих данных
+    if len(current_data) >= 5: # проверка количества записей
+        return # выход если достаточно
     
-    initial_data = [         # создает начальные данные
-        {'id': 1, 'name': 'Иван Иванов', 'age': 25, 'city': 'Москва'},          # запись 1
-        {'id': 2, 'name': 'Петр Петров', 'age': 30, 'city': 'Санкт-Петербург'}, # запись 2
-        {'id': 3, 'name': 'Анна Сидорова', 'age': 22, 'city': 'Казань'},        # запись 3
-        {'id': 4, 'name': 'Мария Кузнецова', 'age': 28, 'city': 'Новосибирск'}, # запись 4
-        {'id': 5, 'name': 'Алексей Смирнов', 'age': 35, 'city': 'Екатеринбург'} # запись 5
+    sample_data = [ # начальные данные
+        {'id': 101, 'name': 'андрей павлов', 'age': 27, 'city': 'краснодар'}, # запись 1
+        {'id': 102, 'name': 'елена волкова', 'age': 31, 'city': 'ростов'}, # запись 2
+        {'id': 103, 'name': 'сергей орлов', 'age': 24, 'city': 'воронеж'}, # запись 3
+        {'id': 104, 'name': 'ольга лебедева', 'age': 29, 'city': 'самара'}, # запись 4
+        {'id': 105, 'name': 'дмитрий соколов', 'age': 33, 'city': 'уфа'} # запись 5
     ]
     
-    save_data(initial_data)  # сохраняет начальные данные
-    print("База данных инициализирована с 5 записями.")  # сообщение об инициализации
+    store_data(sample_data) # сохранение начальных данных
+    print("инициализирована база с пятью записями") # сообщение об инициализации
 
-def main():                  # главная функция программы
-    initialize_data()        # инициализирует данные
+def program_loop(): # главный цикл программы
+    setup_initial_data() # инициализация данных
     
-    while True:              # бесконечный цикл
-        show_menu()          # показывает меню
+    while True: # бесконечный цикл
+        menu_interface() # вывод меню
         
-        try:                 # обработка ошибок
-            choice = input("Выберите пункт меню (1-5): ")  # запрашивает выбор
+        try: # обработка ошибок
+            selection = input("укажите действие (1-5): ") # запрос выбора
             
-            if choice == '1':           # если выбран пункт 1
-                show_all_records()      # показывает все записи
-            elif choice == '2':         # если выбран пункт 2
-                find_record_by_id()     # ищет запись по ID
-            elif choice == '3':         # если выбран пункт 3
-                add_record()            # добавляет запись
-            elif choice == '4':         # если выбран пункт 4
-                delete_record()         # удаляет запись
-            elif choice == '5':         # если выбран пункт 5
-                exit_program()          # выходит из программы
-            else:                       # если выбор некорректен
-                print("Ошибка: выберите пункт от 1 до 5.")  # сообщение об ошибке
+            if selection == '1': # если выбрано 1
+                display_records() # показать записи
+            elif selection == '2': # если выбрано 2
+                search_by_identifier() # поиск по id
+            elif selection == '3': # если выбрано 3
+                insert_new_record() # добавление записи
+            elif selection == '4': # если выбрано 4
+                remove_entry() # удаление записи
+            elif selection == '5': # если выбрано 5
+                terminate_app() # завершение программы
+            else: # неверный выбор
+                print("неверный выбор - используйте значения 1-5") # сообщение об ошибке
         
-        except KeyboardInterrupt:       # если нажат Ctrl+C
-            print("\n\nПрограмма прервана пользователем.")  # сообщение
-            exit_program()              # выходит из программы
+        except KeyboardInterrupt: # если нажат ctrl+c
+            print("\n\nоперация прервана") # сообщение
+            terminate_app() # завершение программы
         
-        except Exception as e:          # если произошла другая ошибка
-            print(f"Произошла ошибка: {e}")  # выводит ошибку
+        except Exception as err: # другие ошибки
+            print(f"ошибка выполнения: {err}") # вывод ошибки
 
-if __name__ == "__main__":  # проверяет что файл запущен напрямую
-    main()                  # запускает главную функцию
+if __name__ == "__main__": # проверка запуска файла напрямую
+    program_loop() # запуск главного цикла
 
 print("end code")
